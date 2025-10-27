@@ -88,7 +88,7 @@
             width: 100%;
             height: 70vh;
             overflow: hidden;
-            background: #000;
+            background: #fff; /* Mudei para branco para testar */
         }
         
         .slide {
@@ -102,6 +102,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            background: #fff; /* Fundo branco para as imagens */
         }
         
         .slide.active {
@@ -111,9 +112,8 @@
         .slide img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Mudei de 'contain' para 'cover' para preencher melhor */
-            background: #000;
-            filter: brightness(1.1) contrast(1.1); /* Ajuste de brilho e contraste */
+            object-fit: contain; /* Voltei para contain para mostrar imagem completa */
+            display: block;
         }
         
         /* Controles */
@@ -278,16 +278,6 @@
             animation: fadeIn 1.5s ease forwards;
         }
         
-        /* Loading para imagens */
-        .slide img {
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        
-        .slide img.loaded {
-            opacity: 1;
-        }
-        
         /* Responsividade */
         @media (max-width: 768px) {
             .invite-title {
@@ -378,16 +368,16 @@
         <div class="slideshow-container">
             <!-- SUAS IMAGENS -->
             <div class="slide active">
-                <img src="https://i.imgur.com/rAj9zDe.jpeg" alt="Momento especial 1">
+                <img src="https://i.imgur.com/rAj9zDe.jpeg" alt="Momento especial 1" onload="console.log('Imagem 1 carregada')" onerror="console.error('Erro imagem 1')">
             </div>
             <div class="slide">
-                <img src="https://i.imgur.com/VVdbO8X.jpeg" alt="Momento especial 2">
+                <img src="https://i.imgur.com/VVdbO8X.jpeg" alt="Momento especial 2" onload="console.log('Imagem 2 carregada')" onerror="console.error('Erro imagem 2')">
             </div>
             <div class="slide">
-                <img src="https://i.imgur.com/1R6lQo5.jpeg" alt="Momento especial 3">
+                <img src="https://i.imgur.com/1R6lQo5.jpeg" alt="Momento especial 3" onload="console.log('Imagem 3 carregada')" onerror="console.error('Erro imagem 3')">
             </div>
             <div class="slide">
-                <img src="https://i.imgur.com/ZfvIU8P.jpeg" alt="Momento especial 4">
+                <img src="https://i.imgur.com/ZfvIU8P.jpeg" alt="Momento especial 4" onload="console.log('Imagem 4 carregada')" onerror="console.error('Erro imagem 4')">
             </div>
             
             <button class="prev" id="prevBtn">&#10094;</button>
@@ -406,7 +396,7 @@
         <button class="music-btn-simple playing" id="musicBtn">❚❚</button>
         <audio id="backgroundMusic" loop>
             <!-- SUBSTITUA "sua-musica.mp3" pelo nome exato do seu arquivo -->
-            <source src="sua-musica.mp3" type="audio/mp3">
+            <source src="Marcos & Belutti - Sonho De Todo Casal (Energia) [oejyRpHiP2M].mp3" type="audio/mp3">
             Seu navegador não suporta o elemento de áudio.
         </audio>
     </div>
@@ -428,7 +418,7 @@
         
         let currentSlide = 0;
         let slideInterval;
-        let isMusicPlaying = true; // Agora começa como true
+        let isMusicPlaying = true;
         let heartsAnimation = null;
         
         // SUAS FRASES PERSONALIZADAS
@@ -466,6 +456,26 @@
             
             // Configurar volume
             backgroundMusic.volume = 0.7;
+            
+            // Verificar se as imagens carregaram
+            checkImages();
+        }
+        
+        function checkImages() {
+            console.log("Verificando imagens...");
+            document.querySelectorAll('.slide img').forEach((img, index) => {
+                console.log(`Imagem ${index + 1}:`, img.src);
+                if (img.complete) {
+                    console.log(`Imagem ${index + 1} já carregada`);
+                } else {
+                    img.onload = function() {
+                        console.log(`Imagem ${index + 1} carregada com sucesso`);
+                    };
+                    img.onerror = function() {
+                        console.error(`ERRO: Imagem ${index + 1} não carregada - ${this.src}`);
+                    };
+                }
+            });
         }
         
         // Função para criar corações (apenas na última foto)
@@ -636,19 +646,6 @@
                 musicBtn.classList.add('playing');
                 isMusicPlaying = true;
             }
-        });
-        
-        // Verificar se as imagens carregaram
-        window.addEventListener('load', () => {
-            document.querySelectorAll('.slide img').forEach(img => {
-                img.onerror = function() {
-                    console.error('Erro ao carregar imagem:', this.src);
-                    this.alt = 'Imagem não carregada';
-                };
-                img.onload = function() {
-                    this.classList.add('loaded');
-                };
-            });
         });
         
         // Inicializar a página
