@@ -111,8 +111,9 @@
         .slide img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover; /* Mudei de 'contain' para 'cover' para preencher melhor */
             background: #000;
+            filter: brightness(1.1) contrast(1.1); /* Ajuste de brilho e contraste */
         }
         
         /* Controles */
@@ -223,9 +224,12 @@
             transition: all 0.3s ease;
         }
         
+        .music-btn-simple.playing {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        
         .music-btn-simple:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
         }
         
         /* Corações animados */
@@ -399,10 +403,10 @@
         </div>
         
         <!-- Botão de Música Simplificado -->
-        <button class="music-btn-simple" id="musicBtn">♪</button>
+        <button class="music-btn-simple playing" id="musicBtn">❚❚</button>
         <audio id="backgroundMusic" loop>
             <!-- SUBSTITUA "sua-musica.mp3" pelo nome exato do seu arquivo -->
-            <source src="Marcos & Belutti - Sonho De Todo Casal (Energia) [oejyRpHiP2M].mp3" type="audio/mp3">
+            <source src="sua-musica.mp3" type="audio/mp3">
             Seu navegador não suporta o elemento de áudio.
         </audio>
     </div>
@@ -424,7 +428,7 @@
         
         let currentSlide = 0;
         let slideInterval;
-        let isMusicPlaying = false; // Começa como false
+        let isMusicPlaying = true; // Agora começa como true
         let heartsAnimation = null;
         
         // SUAS FRASES PERSONALIZADAS
@@ -507,6 +511,26 @@
             }
         }
         
+        // Função para iniciar a música
+        function startMusic() {
+            backgroundMusic.play().then(() => {
+                console.log("Música iniciada automaticamente!");
+                musicBtn.textContent = "❚❚";
+                musicBtn.classList.add('playing');
+                isMusicPlaying = true;
+            }).catch(error => {
+                console.log("Reprodução automática bloqueada: ", error);
+                musicBtn.textContent = "♪";
+                musicBtn.classList.remove('playing');
+                isMusicPlaying = false;
+                
+                // Mostra alerta educado
+                setTimeout(() => {
+                    alert("🎵 Para uma experiência completa, clique no botão play para reproduzir a música especial!");
+                }, 1000);
+            });
+        }
+        
         // Função para abrir a surpresa
         openBtn.addEventListener('click', () => {
             // Efeito de fade out na tela de convite
@@ -524,6 +548,9 @@
                     
                     // INICIAR SLIDESHOW AUTOMÁTICO
                     startSlideShow();
+                    
+                    // INICIAR MÚSICA AUTOMATICAMENTE
+                    startMusic();
                     
                 }, 100);
             }, 800);
@@ -599,15 +626,14 @@
             if (isMusicPlaying) {
                 backgroundMusic.pause();
                 musicBtn.textContent = "♪";
-                musicBtn.style.background = "linear-gradient(45deg, #667eea, #764ba2)";
+                musicBtn.classList.remove('playing');
                 isMusicPlaying = false;
             } else {
                 backgroundMusic.play().catch(error => {
-                    console.log("Reprodução bloqueada: ", error);
-                    alert("🎵 Clique novamente para reproduzir a música especial!");
+                    console.log("Erro ao reproduzir: ", error);
                 });
                 musicBtn.textContent = "❚❚";
-                musicBtn.style.background = "linear-gradient(45deg, #ff6b6b, #ee5a24)";
+                musicBtn.classList.add('playing');
                 isMusicPlaying = true;
             }
         });
@@ -630,4 +656,3 @@
     </script>
 </body>
 </html>
-
